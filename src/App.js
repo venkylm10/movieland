@@ -1,28 +1,57 @@
-import "./App.css";
-import {useState, useEffect} from "react";
+import {useEffect, useState} from 'react';
+import './App.css';
+import SearchIcon from './search.svg';
+import MovieCard from './MovieCard';
 
-// const Person = (props) => {
-//   return (
-//     <div>
-//       <h1>First Name: {props.firstName}</h1>
-//       <h2>Last Name: {props.lastName}</h2>
-//       <h2>Age: {props.age}</h2>
-//     </div>
-//   );
-// };
+// b3661c6c
 
-const App = () => {
-  const [count, setCount] = useState(0);
-  useEffect(()=>{
-   alert('You have changed the counter to ' + count);
-  },[count]);
-  return (
-    <div className="App">
-      <button onClick={()=> setCount((prevCount)=> prevCount - 1)}>-</button>
-      <h1>{count}</h1>
-      <button onClick={()=>setCount((prevCount)=>prevCount+1)}>+</button>
+const API_URL = 'https://www.omdbapi.com/?apikey=b3661c6c';
+
+
+const App = ()=>{
+
+    const  [movies, setMovies] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const searchMovies = async (title)=>{
+        const response = await fetch(`${API_URL}&s=${title}`);
+        const data = await response.json();
+        setMovies(data.Search);
+    };
+
+    useEffect(()=>{
+        searchMovies('batman');
+    },[]);
+
+    return (
+    <div className = "app" >
+        <h1>MovieLand</h1>
+        <div className = 'search'>
+            <input 
+                placeholder='Search for movies'
+                value = {searchTerm}
+                onChange={(e)=>setSearchTerm(e.target.value)}
+            >
+            </input>
+            <img 
+                src={SearchIcon} alt='Search-Icon'
+                onClick={()=>searchMovies(searchTerm)}
+            ></img>
+        </div>
+        {movies.length > 0? 
+            (
+                <div className='container'>
+                    {movies.map((movie)=>(
+                        <MovieCard movie={movie}/>))
+                    }
+                </div>
+            ) : (
+                <div className='empty'>
+                    <h2>No movies found</h2>
+                </div>
+            )}
     </div>
-  );
-};
+    )
+}
 
 export default App;
